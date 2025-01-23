@@ -130,9 +130,17 @@ Don't be left unprotected. Order your don SSSS3000 today!"""
 # TODO 1: the text extracted from the PDF needs to be added inside this constant
 def extract_text_from_pdf():
     import os
-    from tika import parser
-    raw = parser.from_file(os.getenv("PDF_PATH"))
-    return raw['content']
+    import fitz
+
+    pdf_path = os.getenv("PDF_PATH")
+    if not pdf_path:
+        raise ValueError("PDF_PATH environment variable is not set")
+
+    text_content = ""
+    with fitz.open(pdf_path) as pdf:
+        for page in pdf:
+            text_content += page.get_text()
+    return text_content
 
 
 SAMPLE_TEXT_FOR_BENCH = extract_text_from_pdf()
